@@ -1,0 +1,209 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <stack>
+#include <list>
+#include <sstream>
+#include <fstream>
+#include <iomanip>
+#include <iterator>
+#include <numeric>
+#include <limits>
+#include <algorithm>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
+#ifdef _DEBUG
+#include <windows.h>
+#endif
+using namespace std;
+
+#define VERBOSE 
+
+void print(ostream& os, const set<string>& s, const char* t) {
+  os << t << ":";
+  for (set<string>::const_iterator i = s.begin(); i != s.end(); ++i) {
+    os << (i != s.begin() ? ", " : " ");
+    os << *i;
+  }
+  os << endl;
+}
+
+struct fault_t {
+  int address, mask_0, mask_1, mask_faulty;
+  fault_t() : address(-1) {}
+};
+
+bool operator<(const fault_t& a, const fault_t& b) {
+  return a.address < b.address;
+}
+
+struct cmd_t {
+  char code;
+  vector<int> args;
+};
+
+struct block_t { 
+  int address; int length; 
+  block_t(int _address, int _length) : address(_address), length(_length) {}
+};
+
+void print(const string& msg, const list<block_t>& free_blocks, const vector<block_t>& allocated_blocks) {
+  cerr << msg << endl;
+  cerr << "FREE BLOCKS:" << endl;
+  for (list<block_t>::const_iterator i = free_blocks.begin(); i != free_blocks.end(); ++i) {
+    cerr << i->address << " " << i->length << endl;
+  }
+  cerr << "ALLOCATED BLOCKS:" << endl;
+  for (vector<block_t>::const_iterator i = allocated_blocks.begin(); i != allocated_blocks.end(); ++i) {
+    if (i->address == -1) continue;
+    cerr << i->address << " " << i->length << endl;
+  }
+  cerr << endl;
+}
+
+int main(int argc, char* argv[]) {
+
+  ifstream is("4.in");
+
+  int mem_size, faults_count, commands_count;
+
+  is >> mem_size >> faults_count >> commands_count;
+
+  vector<fault_t> faults;
+  for (int i = 0; i < faults_count; ++i) {
+    faults.push_back(fault_t());
+    fault_t& fault = faults.back();
+    is >> fault.address >> fault.mask_0 >> fault.mask_1 >> fault.mask_faulty;
+  }
+    
+  sort(faults.begin(), faults.end());
+
+  vector<cmd_t> commands;
+  for (int i = 0; i < commands_count; ++i) {
+    commands.push_back(cmd_t());
+    is >> commands.back().code;
+    cmd_t& cmd = commands.back();
+    int sz = 1;   // 'a' and 'f'
+    if (cmd.code == 'r' || cmd.code == 'w')
+      sz = 3;
+    for (int i = 0; i < sz; ++i) {
+      cmd.args.push_back(0);
+      is >> cmd.args.back();
+    }
+    if (cmd.code == 'w') {
+      sz = cmd.args[2];
+      for (int i = 0; i < sz; ++i) {
+        cmd.args.push_back(0);
+        is >> cmd.args.back();
+      }
+    }
+
+  }
+
+  vector<int> mem(mem_size, 0);
+
+  vector<int> faults_0(mem.size(), 0);
+  vector<int> faults_1(mem.size(), 0);
+  vector<int> faults_x(mem.size(), 0);
+  vector<int> counters(mem.size(), 0);
+
+  for (vector<fault_t>::const_iterator i = faults.begin(); i != faults.end(); ++i) {
+    faults_0[i->address] = i->mask_0;
+    faults_1[i->address] = i->mask_1;
+    faults_X[i->address] = i->mask_faulty;
+  }
+
+  for (int i = 0; i < mem.size(); ++i)
+    counters[i] = mem.size() - i;
+
+  list<block_t> free_blocks;
+  free_blocks.push_back(block_t(0, mem.size()));
+
+  vector<block_t> allocated_blocks;
+
+#ifdef VERBOSE
+  print("START", free_blocks, allocated_blocks);
+#endif
+
+  for (int i = 0; i < commands.size(); ++i) {
+    cmd_t& cmd = commands[i];
+    if (cmd.code == 'a') {
+
+#ifdef VERBOSE
+      print("ALLOCATE before (compacting)", free_blocks, allocated_blocks);
+#endif
+
+      list<block_t>::iterator prev_i;
+      for (list<block_t>::iterator i = free_blocks.begin(); i != free_blocks.end(); ++i) {
+        if (i != free_blocks.begin()) {
+          if (prev_i->address + prev_i->length == i->address) {
+            i->address = prev_i->address;
+            i->length += prev_i->length;
+            free_blocks.erase(prev_i);
+          }
+        }
+        prev_i = i;
+      }
+
+#ifdef VERBOSE
+      print("ALLOCATE before (compacted)", free_blocks, allocated_blocks);
+#endif
+
+      int sz = cmd.args[0];
+      bool found = false;
+      for (list<block_t>::iterator i = free_blocks.begin(); i != free_blocks.end(); ++i) {
+        if (i->length < sz) continue;
+        int address = i->address;
+        cout << i->address << endl;
+        allocated_blocks.push_back(block_t(address, sz));
+        i->address += sz;
+        i->length -= sz;
+        found = true;
+        break;
+      }
+      if (!found) {
+        assert(false);
+      }
+
+#ifdef VERBOSE
+      print("ALLOCATE after", free_blocks, allocated_blocks);
+#endif
+    } else if (cmd.code == 'f') {
+#ifdef VERBOSE
+      print("FREE before", free_blocks, allocated_blocks);
+#endif
+      int index = cmd.args[0];
+      block_t block(allocated_blocks[index].address, allocated_blocks[index].length);
+
+      bool inserted = false;
+      for (list<block_t>::iterator i = free_blocks.begin(); i != free_blocks.end(); ++i) {
+        if (i->address < block.address) {
+          assert(i->address + i->length <= block.address);
+        } else if (i->address == block.address) {
+          assert(true);
+        } else {
+          free_blocks.insert(i, block);
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) {
+        free_blocks.push_back(block);
+      }
+      allocated_blocks[index].address = -1;
+#ifdef VERBOSE
+      print("FREE after", free_blocks, allocated_blocks);
+#endif
+    }
+  }
+
+#ifdef x_DEBUG
+  getchar();
+#endif
+
+  return 0;
+}

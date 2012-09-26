@@ -1,0 +1,23 @@
+cities.txt contains six colums separated by tab characters
+
+columns
+-------
+cityid      : identifier of the city
+countrycode : ISO-3166 2-letter country code
+asciiname   : name of the city in plain ascii characters (may contain space)
+latitude    : latitude of the city in decimal degrees in the range [-90,90]
+longitude   : longitude of the city in decimal degrees in the range [-180,180]
+population  : integer population data
+
+source
+------
+The data is from GeoNames
+http://www.geonames.org/export/
+
+license
+-------
+This work is licensed under a Creative Commons Attribution 3.0 License,
+see http://creativecommons.org/licenses/by/3.0/
+The Data is provided "as is" without warranty or any representation of
+accuracy, timeliness or completeness.
+

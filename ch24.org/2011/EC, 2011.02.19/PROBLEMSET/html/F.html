@@ -1,0 +1,100 @@
+<html>
+<head><title>F. Allocator</title></head>
+<body>
+<div align="justify">
+
+<h2>F. Allocator</h2>
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align="justify">
+ Pear, manufacturer of the now popular jDesk portable music player, faces
+ a problem: the cheap SRAM they purchased is all faulty, right before
+ the great demo where the company is to present the new model to the 
+ potential customers. As a quick
+ workaround, they want a special memory allocator to be designed, that allows
+ the few common memory usage patterns to work on the device, so that at least those
+ few programs they want to show on the demo would happen to work.
+<p>
+ There are three types of RAM problems, each affecting random bits of
+ the memory:
+<ul>
+<li> bit stuck in 1 state
+<li> bit stuck in 0 state
+<li> bit is unreliable (returns random number for each read, unusable)
+</ul>
+<td> &nbsp;&nbsp; <td>
+<img src="eprom.jpg">
+</table>
+<p>
+ To isolate the problem, Pear mapped the memory use of those few common memory usage
+ patterns they want to sell their devices with. These maps contain only
+ the following instructions:
+<table align=left>
+<tr><td> a n              <td> allocate <I>n</I> bytes of memory
+<tr><td> f IDX            <td> free the memory allocated by the <I>IDXth</I> 'a' instruction
+<tr><td> w IDX ofs sz str <td> write string from byte offset <I>ofs</I> of the allocation; number of bytes is <I>sz</I>
+<tr><td> r IDX ofs sz     <td> read <I>sz</I> long string from byte offset <I>ofs</I> of allocation <I>IDX</I>
+</table>
+<p>
+ String is given as a space-separated list of decimal numbers between 0 and 255;
+ <I>ofs</I> and <I>sz</I> are always decimal numbers in bytes, &gt;= 0. <I>sz</I>
+ is always smaller than 1024.
+<p>
+ Note: <I>IDX</I> is the reference of the allocation, the index of the "a" command
+ in the dump; first instruction of the dump has <I>IDX</I>=0.
+<p>
+ Programs written for Pear products are perfect - they never write/read
+ beyond the allocation, and never read uninitizalized parts of the memory,
+ never allocate &lt;= 0 bytes, never allocate more than the amount of host memory
+ at a given time, never do illegal free operations.
+ They also always free all memory used by the end of the program execution.
+<!--NewPage-->
+<p>
+ The memory fault map is given as a sequence of the following structure,
+ each in a new line:
+<pre>
+  address mask0 mask1 maskF
+</pre>
+<p>
+ where address is a decimal address in the memory (byte offset), mask0 is
+ the bitmask of bits stuck 0, mask1 is the bitmask of bits stuck 1,
+ maskF is the bitmask of faulty (unusable bits).
+
+<h3>Input</h3>
+<p>
+<ul>
+<li> size of the memory (in bytes), number of memory faults, number of dump entries
+<li> memory fault map
+<li> memory operation dump
+</ul>
+
+<h3>Output</h3>
+<p>
+A linear list of allocation addresses in the order of allocation,
+0 &lt;= address &lt; size of memory
+
+<h3>Example input</h3>
+<pre>
+26 2 7
+21 5 8 18
+25 1 2 12
+a 6
+a 10
+w 0 2 3 112 177 221
+w 1 0 4 112 6 6 6
+r 0 2 2
+r 1 0 3
+f 0
+f 1
+</pre>
+<p>
+Notes: first instruction is an allocation.
+
+<h3>Example output</h3>
+<pre>
+2
+10
+</pre>
+<p>
+
+</body>
+</html>

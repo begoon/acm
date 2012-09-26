@@ -1,0 +1,58 @@
+<html>
+<head><title>P. Pow</title></head>
+<body>
+<div align="justify">
+
+<h2>P. Pow</h2>
+<table border=0 cellpadding=0 cellspacing=0>
+<tr>
+<td>
+<p>
+Your task is to evaluate a mysterious function on various inputs.
+The function is given by the following pseudocode:
+<pre>
+function magic(X, Y):
+	R := 1
+	while Y > 0:
+		R := R * X
+		Y := Y - 1
+	return R mod 2011
+</pre>
+all the variables are non-negative integers,
+the operators have the usual semantics.
+
+<h3>Input</h3>
+<p>
+Each input will contain several test cases, one test case per line.
+<p>
+Each test case consists of two positive integers: X,Y
+<p>
+The last line of the input will contain two zeros.
+
+<h3>Output</h3>
+<p>
+For each test case print one line with the return value of magic(X,Y)
+
+<td> &nbsp;&nbsp;
+<td>
+<img alt="residues of powers" src="residuesofpowers.png">
+</table>
+
+
+<h3>Example input</h3>
+<pre>
+1 24
+10 2
+2012 1
+0 0
+</pre>
+
+<h3>Example output</h3>
+<pre>
+1
+100
+1
+</pre>
+
+</body>
+</html>

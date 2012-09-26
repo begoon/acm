@@ -1,0 +1,62 @@
+<html>
+<head><title>A. Equilateral</title></head>
+<body>
+<div align="justify">
+
+<h2>A. Equilateral</h2>
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align="justify">
+
+<p>
+You are given N rods with sizes S1,S2,S3 ... SN.
+You can connect two rods with sizes Si and Sj to turn them into one rod
+with size Si+Sj.
+<p>
+You need to create the largest equilateral triangle possible out of the rods.
+So connect the rods in a way that you have 3 rods with exactly the same size.
+<p>
+You do not need to utilise all the rods.
+
+<td> &nbsp;&nbsp; <td>
+<img alt="equilateral triangle" src="triangle.jpg">
+</table>
+
+<h3>Input</h3>
+<p>
+Each input will contain several test cases.
+<p>
+The first line of each test case will contain one number N
+indicating the amount of rods.
+The next line will contain N numbers (S1 ... SN) separated by spaces.
+The last line of the input will contain a 0.
+<p>
+Looking into the inputs you can verify that
+1 &lt;= Si &lt;= 100 and 4 &lt;= N &lt;= 100.
+
+<h3>Output</h3>
+<p>
+For each test case print one line with the size of the side of the
+biggest equilateral triangle that can be built out of the given rods.
+If no equilateral triangle can be built then print 0.
+
+<h3>Example input</h3>
+<pre>
+5
+1 1 1 1 1
+4
+1 2 3 4
+8
+2 4 4 9 3 7 6 2
+0
+</pre>
+
+<h3>Example output</h3>
+<pre>
+1
+0
+11
+</pre>
+
+
+</body>
+</html>

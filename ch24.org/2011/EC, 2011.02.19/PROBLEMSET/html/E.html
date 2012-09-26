@@ -1,0 +1,102 @@
+<html>
+<head><title>E. Labeling</title></head>
+<body>
+<div align="justify">
+
+<h2>E. Labeling</h2>
+<table width="100%" border=0 cellpadding=0 cellspacing=0>
+<tr><td align="justify">
+The task is to place city name labels on various zoom levels of a world map.
+<td>&nbsp; &nbsp;
+<td><img src="igo.jpg">
+</table>
+<img src="map.png" alt="world map">
+<p>
+A list of cities with name, location and population is given in a tab separated
+file, <code>cities.txt</code>, the description of the columns is in the
+<code>cities.readme</code> file.
+<p>
+The label is written on the map using a 6x10 unit fixed width font, so it
+covers a rectangular area which height is 10 units and width is 6 units times
+the number of characters in the name of the city.
+<p>
+A label should be placed right next to its city and labels must not overlap.
+<p>
+The coordinates of a geographic location on the map is given by
+<pre>
+x = longitude * SCALE
+y = latitude * SCALE
+</pre>
+<p>
+where longitude and latitude are in degrees as in <code>cities.txt</code>
+and x, y are in the same units as the font of the labels.
+<p>
+The map wraps around horizontally so a label truncated on the right continues on
+the left side of the map. Vertically labels must not get truncated.
+<p>
+People are happy when they see the label of their city displayed on the map
+and you want to make as many people happy as possible.
+
+<h3>Input</h3>
+<p>
+Single line containing the <code>SCALE</code> number.
+
+<h3>Output</h3>
+<p>
+Each line of the output must contain three numbers separated by whitespace:
+<code>ID,X,Y</code>.
+Where <code>ID</code> is the id of a city (first column in <code>cities.txt</code>),
+and <code>X,Y</code> are the coordinates of the
+center of the label of the city (in map coordinate system).
+<p>
+Labels may appear in arbitrary order in the output and you don't have
+to label every city.
+<p>
+The location of a city must be on the boundary of its label and labels
+must not overlap, these constraints will be checked with 0.1 unit precision.
+<p>
+The map is cylindrical and the coordinate system wraps around horizontally:
+<code>X+360*SCALE,Y</code> is the same point as <code>X,Y</code>.
+When printing the coordinates of a label make sure that
+<pre>
+-180 * SCALE &lt;= X &lt;= 180 * SCALE
+-90 * SCALE + 5 &lt;= Y &lt;= 90 * SCALE - 5
+</pre>
+
+<h3>Score</h3>
+<pre>
+P = sum(population of labelled cities)
+SCORE = 100 * (1 - sqrt(1 - P/MAXP))
+</pre>
+where <code>MAXP</code> is the best <code>P</code> submitted so far.
+<p>
+Note that a rendered map with the best labeling will be published at
+<a href="http://ch24.org/ec/labeling">http://ch24.org/ec/labeling</a> during the
+contest.
+
+<h3>cities.txt</h3>
+<p>Example lines from <code>cities.txt</code>
+<pre>
+...
+37051	HU	Budakeszi	47.51667	18.93333	13248
+37052	HU	Budaors	47.46181	18.95845	25089
+37053	HU	Budapest	47.49801	19.03991	1696128
+37054	HU	Bugac	46.68889	19.67944	3066
+37055	HU	Bugyi	47.21667	19.15	5412
+...
+</pre>
+
+<h3>Example input</h3>
+<pre>
+2.0
+</pre>
+
+<h3>Example output</h3>
+<pre>
+37053 62.07982 89.99602
+</pre>
+<p>
+In this case the city is at the top left corner of the label.
+
+</body>
+</html>
